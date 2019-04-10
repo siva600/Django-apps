@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>In App Template</h2>
+    <div class="container">
+        <form action=".", method="POST">
+            {% csrf_token %}
+            <p>Do you want to Delete ?</p>
+            <p>
+                <input type="submit" value="Yes"/>
+                <a href="../">Cancel</a>
+            </p>
+        </form>
+
+
+    </div>
+{% endblock %}

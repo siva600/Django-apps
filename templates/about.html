@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+
+
+{% block content %}
+
+    <div class="container">
+
+
+        <p>About Page </p>
+
+        <p>
+          {{ title | capfirst }},  my_number: {{ my_number }}
+        </p>
+
+        <ul>
+        {% for item in my_list %}
+            <li>{{ item }}</li>
+        {% endfor %}
+        </ul>
+
+        <ul>
+
+        {% for item in my_list %}
+            {% if item == 312 %}
+                <li>{{ forloop.counter }}. {{ item | add:22}}</li>
+            {% elif item == "Abc" %}
+                <li>This is not Network</li>
+            {% else %}
+                <li>{{ forloop.counter }}. {{ item }}</li>
+            {% endif %}
+
+        {% endfor %}
+        </ul>
+
+
+    </div>
+
+
+{% endblock content %}

@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <div class="container">
+    <p>All Products: </p>
+        {% for item in objects %}
+            <p>
+                {{ item.id }}. <a href="{{ item.get_absolute_url }}">{{ item.title }}</a>
+            </p>
+        {% endfor %}
+
+    </div>
+{% endblock %}

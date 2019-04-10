@@ -1,0 +1,234 @@
+Pycharm: window key + alt + left click
+ or alt + j
+-------------------------
+GAME:
+
+
+Game Categories: Just describes the type of game with below attributes.
+
+
+Games:
+Foreign Key to game category,
+Name,
+Release date,
+Bool Value,
+Timestamp with date and time.
+
+
+Players: Register player scores for played games, relationship between game and game category.
+Gender Value,
+Name,
+Timestamp with date and time.
+
+
+Player Scores:
+Data:
+Foreign key to player,
+Foreign key to game,
+Score value,
+Date in which score value was achieved by player.
+
+
+
+
+HTTP Verb and Scope:
+
+GET - Collection of Game Categories : retrieve all the stored game categories in the collection in Ascending
+GET - Game Category : retrieve a single game category, also with list of url's for each game resource
+POST - Collection of game category : create a new game category in the collection
+PUT - Game Category : will update existing game category
+PATCH - Game Category : update one or more fields of an existing game category
+DELETE - Game Category : delete an existing one
+.............
+
+GET - Collection of games : get all games sorted in ascending
+GET - Game : retrieve only single game also include game category description.
+POST - Collection of games: Create a new game in the collection
+PUT - Game Category : update an existing game
+PATCH - Game Category : update one or more fields in an existing game.
+DELETE - Game Category: delete an existing game
+.............
+
+GET - Collection of players
+GET - Player : retrieve a single player, also include a scores in descending
+POST - Collection of players: Create a new player in the collection
+PUT - Player: update an existing player
+PATCH - player: update one or more fields of an existing player
+DELETE - player: Delete a Player
+...................
+
+GET - Collection of Scores: retrieve all the stored scores in DESC.
+GET - Score : retrieve a single score, also include the player name who achieved the score and game's name
+POST - Collection of scores : create a new score in the collection , relating to an existing player and game
+PUT - Score : update an existing score
+PATCH - Score : update one or more fields in a existing one
+DELETE - Score
+
+
+---------------------------------------------------------------
+Serialization:
+1. Django REST framework uses two-phase process:
+2. Serializers are mediators between: Model Instances, Python Primitives.
+    Parser and renderers handle as mediators between:
+        Python Primitives,
+        HTTP request and responses.
+   * configure the mediator between model Instances
+   * Create subclass of rest_framework.serializers.Serializers class
+
+-------------------------------------------------------------------------
+>>> from datetime import datetime
+>>> from django.utils import timezone
+>>> from django.utils.six import BytesIO
+>>> from rest_framework.renderers import JSONRenderer
+>>> from rest_framework.parsers import JSONParser
+>>> from Game.models import Game
+>>> from Game.serializer import GameSerializer
+>>>
+
+---------------------------------------------------------------
+Creating the Models first.
+Working with Hyperlinked API's:
+Declaring relationship with models,
+Managing serialization and deserialization
+Creating class based views
+Working with the end point API
+Creating and retrieving related resources
+
+
+***
+Process of serialization in shell from the class instance:
+
+>>> gamedatetime = timezone.makeaware(datetime.now(), timezone.get_current_timezone())
+
+>>> game7 = Game(name='mortal combat', release_date=gamedatetime, game_category='action', played=False)
+>>> game7.save()
+>>> game_serializer7 = GameSerializer(game7)
+>>> game_serializer7.data
+    result:
+    {'pk': 1, 'name': 'black ops', 'release_date': None, 'game_category': 'Adventure', 'played': False}
+
+>>> renderer = JSONRenderer()
+>>> rendered_game7 = renderer.render(game_serializer7.data)
+>>> rendered_game7
+b'{"pk":1,"name":"black ops","release_date":null,"game_category":"Adventure","played":false}'
+
+
+**Hyperlinked Model Serializer:
+
+Uses hyperlinked relationship         --> Represents relationship models with hyperlinks --> Generates a field named URL -->Create and update methods
+(instead of Primary key relationship)       (relationship to other model instances is done
+                                                using hyperlinks instead of primary keys)
+-----------------
+Explanation:
+
+Making instance datetime or get current datetime:
+>>> gamedatetime = timezone.makeaware(datetime.now(), timezone.get_current_timezone())
+
+To create serializer objector JSON object:
+game_serializer1 = GameSerializer(game7)
+
+**
+The above is possible with the below instance: This converts the class to dict instance..
+
+rest_framework.utils.serializer_helpers.ReturnDict
+
+**
+Now we can render the above dictioanry attribute to JSON, using:
+rest_framework.renderers.JSONRenderer.
+
+---------------------------------------
+ *****
+Deserialization of data from shell:
+
+import io
+from rest_framework.parsers import JSONParser
+
+Process of Deserialization:
+>>> json_string = '{"name":"Tomd Rider","game_category":"action", "release_date":"2019-04-07 19:44:12.286041", "played":false}'
+>>> json_bytes = bytes(json_string, encoding="UTF-8")
+>>> stream = io.BytesIO(json_bytes)
+
+So when the data is ready from the network...,
+>>> data = JSONParser().parse(stream)
+>>> data
+
+{'name': 'Tomd Rider', 'game_category': 'action', 'release_date': '2019-04-07 19:44:12.286041', 'played': False}
+//
+
+** notes: Boolean values must be in true and false (small letters)
+   All the key, values must be in string format(only double quotes).
+
+Then generate a fully populated class instance from a python dictionary parsed from the stream:
+//
+>>> new_game_serializer = GameSerializer(data=parsed_new_game)
+>>> new_game_serializer.data
+     # this returns a JSON data that is serialized.
+>>> if new_game_serializer.is_valid():
+...     new_game = new_game_serializer.save()
+...
+>>> new_game.name
+'Tomd Rider'
+>>>
+
+----------------------------------------------------------------
+*******
+
+Using Curl or Httpie command line tools to test Http request response cycle:
+
+sudo apt-get install curl
+
+
+~$ curl -iX GET http://localhost:8000/games/
+
+or
+$ http GET :8000/games/
+
+$ http :8000/games/
+
+for jsut JSON response:
+$ http -b :8000/games/
+
+
+POST Example:
+curl -iX POST -H "content-Type: application/json" -d '{"name": "Tin Tin Adventures", "game_category": "3D VR",
+"played": true, "release_date": "2017-05-18T03:02:00.776594Z"}' http://localhost:8000/games/
+
+**
+Running http tests after modifying the views with @api_view decorator.
+
+> http OPTIONS :8000/games/
+------------------------------------------------------------
+
+Using the POstgres:
+
+siva@siva-5548:~$ sudo -i -u postgres
+
+postgres@siva-5548:~$ psql -U postgres
+
+create database games;
+\l  - to check databses..
+
+Creating role:
+postgres=# create role test1 with login password 'abc@123';
+
+
+\du - to check roles
+
+Grant all privileges to games db using with test1:
+
+postgres=# grant all privileges on database games to test1;
+
+
+Installing psycopg2 python:
+sudo apt-get install python-psycopg2
+
+Check version:
+sudo dpkg -l | grep psycopg2
+
+
+Accessing the postgresdb after migrations:
+postgres@siva-5548:~$ psql --host=localhost --username=test1 --dbname=games --command="\dt";
+
+postgres@siva-5548:~$ psql --host=localhost --username=test1 --dbname=games --command="select * from games_game";
+
+
