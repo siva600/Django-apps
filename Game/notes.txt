@@ -169,6 +169,75 @@ Then generate a fully populated class instance from a python dictionary parsed f
 >>> new_game.name
 'Tomd Rider'
 >>>
+##############################################################
+#              Pagination and Authentication:
+Make default settings in settings file as:
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 5
+}
+
+             Authentication:
+           Django Provides 3 basic authentications:
+
+           Authentication Class
+                    |
+                    |
+         ___________|__________________
+        |             |                |
+Basic               Session            Token
+Authentication       Authentication      Auth..
+   (provides HTTP    (Works with DJango       (Provides simple token
+   basic auth..)       Session framework)     based and generates token
+                                                    for users )
+
+
+          REST Framework Generics
+                      |
+                      |
+         _____________|________________
+        |                              |
+List APIView                    Retrieve APIView
+       |
+   1. Implement get method        1. Implement get method
+   2. Retrieve listing of         2. Retrieve model instance
+      query set
+
+
+* Adding security related data to the models.
+* Creating customized permission class for object level permission
+* configuring permission policies.
+*
+------------------------------------------------------
+Creating a User:
+
+>>> from django.contrib.auth.models import User
+>>> user = User.objects.create_user('Alpha','sivav5059@gmail.com','Alpha11160')
+>>> user.save()
+>>>
+
+
+
+-----------------------------------------------------------
+Throttling:
+
+1. Determines whether request must be authorized
+2. Controls the rate of requests
+ Example limit unauthorized user to 5 request/hr
+ Restrict authorized users to 20 requests per day.
+
+ Totally django provides 3 throttling classes:
+ 1. AnonRate Throttle:
+    Limits rate of request that an anonymous user can make
+    IP address of request is unique cache key
+ 2. UserRate Throttle
+    Limits rate at which specific user can make requests
+    Authenticated users -ID is unique cache key
+
+ 3. ScopedRate Throttle
+     Limits rate of request for specific parts of API
+
+##############################################################
 
 ----------------------------------------------------------------
 *******

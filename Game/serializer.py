@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from Game.models import Game
 from Game.models import GameCategory, Player, PlayerScore
-
+from django.contrib.auth.models import User
 
 # class GameSerializer(serializers.Serializer):
 #     # this method takes the attributes that need to be serialized.
@@ -31,6 +31,29 @@ from Game.models import GameCategory, Player, PlayerScore
 #
 ###################################################################################################
 
+
+class UserGameSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Game
+        fields = (
+            'url',
+            'name'
+        )
+
+
+class UserSerializer(serializers.HyperlinkedModelSerializer):
+    games = UserGameSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = User
+        fields = (
+            'url',
+            'pk',
+            'username',
+            'games'
+        )
+
+
 class GameCategorySerializer(serializers.HyperlinkedModelSerializer):
     games = serializers.HyperlinkedRelatedField(
         many=True,
@@ -47,7 +70,8 @@ class GameCategorySerializer(serializers.HyperlinkedModelSerializer):
 
 
 class GameSerializer(serializers.HyperlinkedModelSerializer):
-    # We want to display the game cagory's name instead of the id
+    owner = serializers.ReadOnlyField(source='owner.username')
+    # We want to display the game category's name instead of the id
     game_category = serializers.SlugRelatedField(queryset=GameCategory.objects.all(), slug_field='name')
 
     class Meta:
@@ -72,6 +96,7 @@ class ScoreSerializer(serializers.HyperlinkedModelSerializer):
             'score',
             'score_date',
             'game')
+
 
 class PlayerSerializer(serializers.HyperlinkedModelSerializer):
     scores = ScoreSerializer(many=True, read_only=True)

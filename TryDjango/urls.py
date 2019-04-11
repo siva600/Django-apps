@@ -25,5 +25,6 @@ urlpatterns = [
     path('about/', about_view, name='about'),
     path('products/', include('products.urls')),
     path('games/', include('Game.urls')),
+    path('api-auth/', include('rest_framework.urls')),
 ]
 
