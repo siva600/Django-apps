@@ -67,6 +67,7 @@ DELETE - Score
 
 ---------------------------------------------------------------
 Serialization:
+Converting our data from db into a data structure that can be used later to generate a http response is called serialization.
 1. Django REST framework uses two-phase process:
 2. Serializers are mediators between: Model Instances, Python Primitives.
     Parser and renderers handle as mediators between:
