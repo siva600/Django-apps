@@ -165,3 +165,4 @@ REST_FRAMEWORK = {
         'game-categories': '30/hour',
     }
 }
+SESSION_COOKIE_SECURE = True
